@@ -181,7 +181,9 @@ getGenMap = function(object=NULL, sex="A"){
 #' is returned. Options are "A" for average map, "F" 
 #' for female map, and "M" for male map. All options are 
 #' equivalent if not using sex specific maps.
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
 #'
 #' @return Returns a data.frame with:
 #' \describe{
@@ -269,7 +271,9 @@ getSnpMap = function(snpChip=1, sex="A", simParam=NULL){
 #' is returned. Options are "A" for average map, "F" 
 #' for female map, and "M" for male map. All options are 
 #' equivalent if not using sex specific maps.
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
 #'
 #' @return Returns a data.frame with:
 #' \describe{
@@ -356,7 +360,11 @@ getQtlMap = function(trait=1, sex="A", simParam=NULL){
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns a matrix of SNP genotypes.
 #' 
@@ -375,9 +383,15 @@ getQtlMap = function(trait=1, sex="A", simParam=NULL){
 #' pullSnpGeno(pop, simParam=SP)
 #' 
 #' @export
-pullSnpGeno = function(pop, snpChip=1, chr=NULL, asRaw=FALSE, simParam=NULL){
+pullSnpGeno = function(pop, snpChip=1, chr=NULL, asRaw=FALSE, simParam=NULL,
+                       nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(snpChip)){
@@ -394,7 +408,7 @@ pullSnpGeno = function(pop, snpChip=1, chr=NULL, asRaw=FALSE, simParam=NULL){
                    simParam$snpChips[[snpChip]]@lociPerChr,
                    simParam$snpChips[[snpChip]]@lociLoc)
   
-  output = getGeno(pop@geno,tmp$lociPerChr,tmp$lociLoc,simParam$nThreads)
+  output = getGeno(pop@geno,tmp$lociPerChr,tmp$lociLoc,nThreads)
   
   if(!asRaw){
     output = convToImat(output)
@@ -421,7 +435,11 @@ pullSnpGeno = function(pop, snpChip=1, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns a matrix of QTL genotypes.
 #' 
@@ -440,9 +458,15 @@ pullSnpGeno = function(pop, snpChip=1, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' pullQtlGeno(pop, simParam=SP)
 #' 
 #' @export
-pullQtlGeno = function(pop, trait=1, chr=NULL, asRaw=FALSE, simParam=NULL){
+pullQtlGeno = function(pop, trait=1, chr=NULL, asRaw=FALSE, simParam=NULL,
+                       nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(trait)){
@@ -459,7 +483,7 @@ pullQtlGeno = function(pop, trait=1, chr=NULL, asRaw=FALSE, simParam=NULL){
                    simParam$traits[[trait]]@lociPerChr,
                    simParam$traits[[trait]]@lociLoc)
   
-  output = getGeno(pop@geno,tmp$lociPerChr,tmp$lociLoc,simParam$nThreads)
+  output = getGeno(pop@geno,tmp$lociPerChr,tmp$lociLoc,nThreads)
   
   if(!asRaw){
     output = convToImat(output)
@@ -486,8 +510,14 @@ pullQtlGeno = function(pop, trait=1, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}, not 
-#' used if pop is \code{\link{MapPop-class}}
+#' @param simParam an object of class \code{\link{SimParam}} for non-
+#' \code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+#' object named \code{SP} from the global environment. Ignored when
+#' \code{pop} is a \code{\link{MapPop-class}}.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from
+#' \code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+#' \code{simParam$nThreads} for \code{\link{RawPop-class}}.
 #'
 #' @return Returns a matrix of genotypes
 #' 
@@ -497,19 +527,25 @@ pullQtlGeno = function(pop, trait=1, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' 
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #' SP$addSnpChip(5)
-#' 
+#'
 #' #Create population
 #' pop = newPop(founderPop, simParam=SP)
 #' pullSegSiteGeno(pop, simParam=SP)
 #' 
 #' @export
-pullSegSiteGeno = function(pop, chr=NULL, asRaw=FALSE, simParam=NULL){
+pullSegSiteGeno = function(pop, chr=NULL, asRaw=FALSE, simParam=NULL,
+                           nThreads=NULL){
   if(is(pop,"MapPop")){
     allLoci = unlist(c(sapply(pop@nLoci, function(x) 1:x)))
     lociTot = pop@nLoci
-    nThreads = getNumThreads()
+    if(is.null(nThreads)){
+      nThreads = getNumThreads()
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     map = pop@genMap
   }else{
     if(is.null(simParam)){
@@ -518,7 +554,11 @@ pullSegSiteGeno = function(pop, chr=NULL, asRaw=FALSE, simParam=NULL){
     
     allLoci = unlist(c(sapply(simParam$segSites, function(x) 1:x)))
     lociTot = simParam$segSites
-    nThreads = simParam$nThreads
+    if(is.null(nThreads)){
+      nThreads = simParam$nThreads
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     map = simParam$genMap
   }
   
@@ -554,7 +594,11 @@ pullSegSiteGeno = function(pop, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns a matrix of SNP haplotypes.
 #' 
@@ -574,9 +618,15 @@ pullSegSiteGeno = function(pop, chr=NULL, asRaw=FALSE, simParam=NULL){
 #' 
 #' @export
 pullSnpHaplo = function(pop, snpChip=1, haplo="all",
-                        chr=NULL, asRaw=FALSE, simParam=NULL){
+                        chr=NULL, asRaw=FALSE, simParam=NULL,
+                        nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(snpChip)){
@@ -597,7 +647,7 @@ pullSnpHaplo = function(pop, snpChip=1, haplo="all",
   lociLoc = tmp$lociLoc
   
   if(haplo=="all"){
-    output = getHaplo(pop@geno,lociPerChr,lociLoc,simParam$nThreads)
+    output = getHaplo(pop@geno,lociPerChr,lociLoc,nThreads)
     
     if(!asRaw){
       output = convToImat(output)
@@ -612,7 +662,7 @@ pullSnpHaplo = function(pop, snpChip=1, haplo="all",
     }
   }else{
     output = getOneHaplo(pop@geno,lociPerChr,lociLoc,
-                         as.integer(haplo),simParam$nThreads)
+                         as.integer(haplo),nThreads)
     
     if(!asRaw){
       output = convToImat(output)
@@ -643,7 +693,11 @@ pullSnpHaplo = function(pop, snpChip=1, haplo="all",
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns a matrix of QTL haplotypes.
 #' 
@@ -663,9 +717,15 @@ pullSnpHaplo = function(pop, snpChip=1, haplo="all",
 #' 
 #' @export
 pullQtlHaplo = function(pop, trait=1, haplo="all",
-                        chr=NULL, asRaw=FALSE, simParam=NULL){
+                        chr=NULL, asRaw=FALSE, simParam=NULL,
+                        nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(trait)){
@@ -687,7 +747,7 @@ pullQtlHaplo = function(pop, trait=1, haplo="all",
   lociLoc = tmp$lociLoc
   
   if(haplo=="all"){
-    output = getHaplo(pop@geno,lociPerChr,lociLoc,simParam$nThreads)
+    output = getHaplo(pop@geno,lociPerChr,lociLoc,nThreads)
     
     if(!asRaw){
       output = convToImat(output)
@@ -702,7 +762,7 @@ pullQtlHaplo = function(pop, trait=1, haplo="all",
     }
   }else{
     output = getOneHaplo(pop@geno,lociPerChr,lociLoc,
-                         as.integer(haplo),simParam$nThreads)
+                         as.integer(haplo),nThreads)
     
     if(!asRaw){
       output = convToImat(output)
@@ -733,8 +793,14 @@ pullQtlHaplo = function(pop, trait=1, haplo="all",
 #' @param chr a vector of chromosomes to retrieve. If NULL,
 #' all chromosome are retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}, not 
-#' used if pop is \code{\link{MapPop-class}}
+#' @param simParam an object of class \code{\link{SimParam}} for non-
+#' \code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+#' object named \code{SP} from the global environment. Ignored when
+#' \code{pop} is a \code{\link{MapPop-class}}.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from
+#' \code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+#' \code{simParam$nThreads} for \code{\link{RawPop-class}}.
 #'
 #' @return Returns a matrix of haplotypes
 #' 
@@ -754,11 +820,16 @@ pullQtlHaplo = function(pop, trait=1, haplo="all",
 #' 
 #' @export
 pullSegSiteHaplo = function(pop, haplo="all",
-                            chr=NULL, asRaw=FALSE, simParam=NULL){
+                            chr=NULL, asRaw=FALSE, simParam=NULL,
+                            nThreads=NULL){
   if(is(pop,"MapPop")){
     allLoci = unlist(c(sapply(pop@nLoci, function(x) 1:x)))
     lociTot = pop@nLoci
-    nThreads = getNumThreads()
+    if(is.null(nThreads)){
+      nThreads = getNumThreads()
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     map = pop@genMap
   }else{
     if(is.null(simParam)){
@@ -766,7 +837,11 @@ pullSegSiteHaplo = function(pop, haplo="all",
     }
     allLoci = unlist(c(sapply(simParam$segSites, function(x) 1:x)))
     lociTot = simParam$segSites
-    nThreads = simParam$nThreads
+    if(is.null(nThreads)){
+      nThreads = simParam$nThreads
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     map = simParam$genMap
   }
   if(!is.null(chr)){
@@ -826,7 +901,11 @@ pullSegSiteHaplo = function(pop, haplo="all",
 #' all chromosomes are retrieved.
 #' @param snpChip an integer indicating which SNP array loci 
 #' are to be retrieved. If NULL, all sites are retrieved.
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns a matrix of IBD haplotypes.
 #' 
@@ -846,9 +925,15 @@ pullSegSiteHaplo = function(pop, haplo="all",
 #' pullIbdHaplo(pop, simParam=SP)
 #' 
 #' @export
-pullIbdHaplo = function(pop, chr=NULL, snpChip=NULL, simParam=NULL){
+pullIbdHaplo = function(pop, chr=NULL, snpChip=NULL, simParam=NULL,
+                        nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(snpChip)){
@@ -878,7 +963,7 @@ pullIbdHaplo = function(pop, chr=NULL, snpChip=NULL, simParam=NULL){
   output = createIbdMat(ibd=ibd, chr=chr, 
                         nLoci=pop@nLoci, 
                         ploidy=pop@ploidy,
-                        nThreads=simParam$nThreads)
+                        nThreads=nThreads)
   
   rownames(output) = paste(rep(pop@id,each=pop@ploidy),
                            rep(1:pop@ploidy,pop@nInd),sep="_")
@@ -912,8 +997,14 @@ pullIbdHaplo = function(pop, chr=NULL, snpChip=NULL, simParam=NULL){
 #' @param markers a character vector. Indicates the
 #' names of the loci to be retrieved.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}, not 
-#' used if pop is \code{\link{MapPop-class}}
+#' @param simParam an object of class \code{\link{SimParam}} for non-
+#' \code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+#' object named \code{SP} from the global environment. Ignored when
+#' \code{pop} is a \code{\link{MapPop-class}}.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from
+#' \code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+#' \code{simParam$nThreads} for \code{\link{RawPop-class}}.
 #'
 #' @return Returns a matrix of genotypes.
 #'
@@ -935,16 +1026,25 @@ pullIbdHaplo = function(pop, chr=NULL, snpChip=NULL, simParam=NULL){
 #' pullMarkerGeno(pop, markers=c("1_1","1_2"), simParam=SP)
 #'
 #' @export
-pullMarkerGeno = function(pop, markers, asRaw=FALSE, simParam=NULL){
+pullMarkerGeno = function(pop, markers, asRaw=FALSE, simParam=NULL,
+                          nThreads=NULL){
   # Get genetic map and nThreads
   if(is(pop,"MapPop")){
-    nThreads = getNumThreads()
+    if(is.null(nThreads)){
+      nThreads = getNumThreads()
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     genMap = pop@genMap
   }else{
     if(is.null(simParam)){
       simParam = get("SP",envir=.GlobalEnv)
     }
-    nThreads = simParam$nThreads
+    if(is.null(nThreads)){
+      nThreads = simParam$nThreads
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     genMap = simParam$genMap
   }
   
@@ -987,8 +1087,14 @@ pullMarkerGeno = function(pop, markers, asRaw=FALSE, simParam=NULL){
 #' for a single set of haplotypes. Use a value of 1 for female
 #' haplotypes and a value of 2 for male haplotypes in diploids.
 #' @param asRaw return in raw (byte) format
-#' @param simParam an object of \code{\link{SimParam}}, not 
-#' used if pop is \code{\link{MapPop-class}}
+#' @param simParam an object of class \code{\link{SimParam}} for non-
+#' \code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+#' object named \code{SP} from the global environment. Ignored when
+#' \code{pop} is a \code{\link{MapPop-class}}.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from
+#' \code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+#' \code{simParam$nThreads} for \code{\link{RawPop-class}}.
 #'
 #' @return Returns a matrix of genotypes.
 #'
@@ -1011,16 +1117,25 @@ pullMarkerGeno = function(pop, markers, asRaw=FALSE, simParam=NULL){
 #' pullMarkerHaplo(pop, markers=c("1_1","1_2"), simParam=SP)
 #'
 #' @export
-pullMarkerHaplo = function(pop, markers, haplo="all", asRaw=FALSE, simParam=NULL){
+pullMarkerHaplo = function(pop, markers, haplo="all", asRaw=FALSE,
+                           simParam=NULL, nThreads=NULL){
   # Get genetic map and nThreads
   if(is(pop,"MapPop")){
-    nThreads = getNumThreads()
+    if(is.null(nThreads)){
+      nThreads = getNumThreads()
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     genMap = pop@genMap
   }else{
     if(is.null(simParam)){
       simParam = get("SP",envir=.GlobalEnv)
     }
-    nThreads = simParam$nThreads
+    if(is.null(nThreads)){
+      nThreads = simParam$nThreads
+    }else{
+      nThreads = as.integer(nThreads)
+    }
     genMap = simParam$genMap
   }
   
@@ -1043,7 +1158,7 @@ pullMarkerHaplo = function(pop, markers, haplo="all", asRaw=FALSE, simParam=NULL
     }
   }else{
     output = getOneHaplo(pop@geno, lociMap$lociPerChr, lociMap$lociLoc,
-                         as.integer(haplo), simParam$nThreads)
+                         as.integer(haplo), nThreads)
     
     if(!asRaw){
       output = convToImat(output)
@@ -1073,8 +1188,14 @@ pullMarkerHaplo = function(pop, markers, haplo="all", asRaw=FALSE, simParam=NULL
 #' @param pop an object of \code{\link{RawPop-class}} or
 #' \code{\link{MapPop-class}}
 #' @param haplo a matrix of haplotypes, see details
-#' @param simParam an object of \code{\link{SimParam}}, not 
-#' used if pop is \code{\link{MapPop-class}}
+#' @param simParam an object of class \code{\link{SimParam}} for non-
+#' \code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+#' object named \code{SP} from the global environment. Ignored when
+#' \code{pop} is a \code{\link{MapPop-class}}.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from
+#' \code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+#' \code{simParam$nThreads} for \code{\link{RawPop-class}}.
 #' 
 #' @details The format of the haplotype matrix should match 
 #' the format of the output from \code{\link{pullMarkerHaplo}}
@@ -1094,29 +1215,39 @@ pullMarkerHaplo = function(pop, markers, haplo="all", asRaw=FALSE, simParam=NULL
 #' founderPop = quickHaplo(nInd=10, nChr=1, segSites=15)
 #' 
 #' # Extract haplotypes for marker "1_1"
-#' H = pullMarkerHaplo(founderPop, markers="1_1")
+#' H = pullMarkerHaplo(founderPop, markers="1_1", nThreads=1L)
+#' H[1,1]
 #' 
 #' # Set the first haplotype to 1
 #' H[1,1] = 1L
 #' 
 #' # Set marker haplotypes
-#' founderPop = setMarkerHaplo(founderPop, haplo=H)
+#' founderPop = setMarkerHaplo(founderPop, haplo=H, nThreads=1L)
+#' pullMarkerHaplo(founderPop, markers="1_1", nThreads=1L)[1,1]
 #' 
 #' @export
-setMarkerHaplo = function(pop, haplo, simParam=NULL){
+setMarkerHaplo = function(pop, haplo, simParam=NULL, nThreads=NULL){
   # Check validity of rows
   stopifnot(nrow(haplo)==(pop@nInd*pop@ploidy))
   
   # Get genetic map
   if(is(pop,"MapPop")){
     genMap = pop@genMap
-    nThreads = getNumThreads()
+    if(is.null(nThreads)){
+      nThreads = getNumThreads()
+    }else{
+      nThreads = as.integer(nThreads)
+    }
   }else{
     if(is.null(simParam)){
       simParam = get("SP",envir=.GlobalEnv)
     }
     genMap = simParam$genMap
-    nThreads = simParam$nThreads
+    if(is.null(nThreads)){
+      nThreads = simParam$nThreads
+    }else{
+      nThreads = as.integer(nThreads)
+    }
   }
   
   # Map markers to the genetic map
@@ -1138,7 +1269,7 @@ setMarkerHaplo = function(pop, haplo, simParam=NULL){
   if(is(pop, "Pop")){
     PHENO = pop@pheno
     EBV = pop@ebv
-    pop = resetPop(pop=pop, simParam=simParam)
+    pop = resetPop(pop=pop, simParam=simParam, nThreads=nThreads)
     pop@pheno = PHENO
     pop@ebv = EBV
   }

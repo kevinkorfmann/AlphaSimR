@@ -4,7 +4,7 @@
 \alias{setMarkerHaplo}
 \title{Set marker haplotypes}
 \usage{
-setMarkerHaplo(pop, haplo, simParam = NULL)
+setMarkerHaplo(pop, haplo, simParam = NULL, nThreads = NULL)
 }
 \arguments{
 \item{pop}{an object of \code{\link{RawPop-class}} or
@@ -12,8 +12,15 @@ setMarkerHaplo(pop, haplo, simParam = NULL)
 
 \item{haplo}{a matrix of haplotypes, see details}
 
-\item{simParam}{an object of \code{\link{SimParam}}, not 
-used if pop is \code{\link{MapPop-class}}}
+\item{simParam}{an object of class \code{\link{SimParam}} for non-
+\code{\link{MapPop-class}} inputs. If \code{NULL}, the function uses the
+object named \code{SP} from the global environment. Ignored when
+\code{pop} is a \code{\link{MapPop-class}}.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from
+\code{getNumThreads()} for \code{\link{MapPop-class}} objects and
+\code{simParam$nThreads} for \code{\link{RawPop-class}}.}
 }
 \value{
 an object of the same class as the "pop" input
@@ -39,12 +46,14 @@ will not reflect the new genotypes.
 founderPop = quickHaplo(nInd=10, nChr=1, segSites=15)
 
 # Extract haplotypes for marker "1_1"
-H = pullMarkerHaplo(founderPop, markers="1_1")
+H = pullMarkerHaplo(founderPop, markers="1_1", nThreads=1L)
+H[1,1]
 
 # Set the first haplotype to 1
 H[1,1] = 1L
 
 # Set marker haplotypes
-founderPop = setMarkerHaplo(founderPop, haplo=H)
+founderPop = setMarkerHaplo(founderPop, haplo=H, nThreads=1L)
+pullMarkerHaplo(founderPop, markers="1_1", nThreads=1L)[1,1]
 
 }

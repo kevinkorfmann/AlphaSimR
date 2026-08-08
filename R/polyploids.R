@@ -13,7 +13,11 @@
 #' @param keepParents should previous parents be used for mother and 
 #' father. 
 #' @param simRecomb should genetic recombination be modeled.
-#' @param simParam an object of 'SimParam' class
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #' 
 #' @return Returns an object of \code{\link{Pop-class}}
 #' 
@@ -33,9 +37,14 @@
 #' 
 #' @export
 reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
-                        simRecomb=TRUE,simParam=NULL){
+                        simRecomb=TRUE,simParam=NULL,nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(pop@ploidy%%2L){
@@ -65,7 +74,7 @@ reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
                             pop@ploidy,
                             simParam$femaleCentromere,
                             simParam$quadProb,
-                            simParam$nThreads)
+                            nThreads)
   dim(tmp$geno) = NULL 
   
   rPop = new("RawPop",
@@ -86,6 +95,7 @@ reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
                   mother=rep(pop@mother,each=nProgeny),
                   father=rep(pop@father,each=nProgeny),
                   simParam=simParam,
+                  nThreads=nThreads,
                   iMother=rep(pop@iid,each=nProgeny),
                   iFather=rep(pop@iid,each=nProgeny),
                   femaleParentPop=pop,
@@ -97,6 +107,7 @@ reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
                   mother=rep(pop@id,each=nProgeny),
                   father=rep(pop@id,each=nProgeny),
                   simParam=simParam,
+                  nThreads=nThreads,
                   iMother=rep(pop@iid,each=nProgeny),
                   iFather=rep(pop@iid,each=nProgeny),
                   femaleParentPop=pop,
@@ -116,7 +127,11 @@ reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
 #' @param pop an object of 'Pop' superclass
 #' @param keepParents should previous parents be used for mother and 
 #' father. 
-#' @param simParam an object of 'SimParam' class
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #' 
 #' @return Returns an object of \code{\link{Pop-class}}
 #' 
@@ -136,9 +151,14 @@ reduceGenome = function(pop,nProgeny=1,useFemale=TRUE,keepParents=TRUE,
 #' 
 #' @export
 doubleGenome = function(pop, keepParents=TRUE,
-                        simParam=NULL){
+                        simParam=NULL,nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   geno = pop@geno
@@ -175,6 +195,7 @@ doubleGenome = function(pop, keepParents=TRUE,
                   mother=pop@mother,
                   father=pop@father,
                   simParam=simParam,
+                  nThreads=nThreads,
                   iMother=pop@iid,
                   iFather=pop@iid,
                   femaleParentPop=pop,
@@ -186,6 +207,7 @@ doubleGenome = function(pop, keepParents=TRUE,
                   mother=pop@id,
                   father=pop@id,
                   simParam=simParam,
+                  nThreads=nThreads,
                   iMother=pop@iid,
                   iFather=pop@iid,
                   femaleParentPop=pop,
@@ -207,7 +229,11 @@ doubleGenome = function(pop, keepParents=TRUE,
 #' @param crossPlan a matrix with two column representing
 #' female and male parents. Either integers for the position in
 #' population or character strings for the IDs.
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return Returns an object of \code{\link{Pop-class}}
 #'
@@ -227,9 +253,14 @@ doubleGenome = function(pop, keepParents=TRUE,
 #' pop2 = mergeGenome(pop, pop, crossPlan, simParam=SP)
 #'
 #' @export
-mergeGenome = function(females,males,crossPlan,simParam=NULL){
+mergeGenome = function(females,males,crossPlan,simParam=NULL,nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   
   if(is.character(crossPlan)){ #Match by ID
@@ -297,6 +328,7 @@ mergeGenome = function(females,males,crossPlan,simParam=NULL){
                 mother=females@id[crossPlan[,1]],
                 father=males@id[crossPlan[,2]],
                 simParam=simParam,
+                nThreads=nThreads,
                 iMother=females@iid[crossPlan[,1]],
                 iFather=males@iid[crossPlan[,2]],
                 femaleParentPop=females,
@@ -304,4 +336,3 @@ mergeGenome = function(females,males,crossPlan,simParam=NULL){
                 hist=hist
   ))
 }
-

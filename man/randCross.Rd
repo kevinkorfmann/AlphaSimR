@@ -11,7 +11,8 @@ randCross(
   balance = TRUE,
   parents = NULL,
   ignoreSexes = FALSE,
-  simParam = NULL
+  simParam = NULL,
+  nThreads = NULL
 )
 }
 \arguments{
@@ -19,7 +20,9 @@ randCross(
 
 \item{nCrosses}{total number of crosses to make}
 
-\item{nProgeny}{number of progeny per cross}
+\item{nProgeny}{number of progeny per cross. May be a single value for all 
+crosses or a vector with values equal to the number of crosses. If providing 
+a vector, the values are randomly assigned to each cross.}
 
 \item{balance}{if using sexes, this option will balance the number
 of progeny per parent}
@@ -28,7 +31,12 @@ of progeny per parent}
 
 \item{ignoreSexes}{should sexes be ignored}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 Returns an object of \code{\link{Pop-class}}
@@ -52,3 +60,18 @@ pop = newPop(founderPop, simParam=SP)
 pop2 = randCross(pop, 10, simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+}
+\concept{mating functions}

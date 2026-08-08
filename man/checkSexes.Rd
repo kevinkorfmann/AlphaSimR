@@ -4,14 +4,15 @@
 \alias{checkSexes}
 \title{Find individuals of desired sex}
 \usage{
-checkSexes(pop, sex, simParam, ...)
+checkSexes(pop, sex, simParam = NULL, ...)
 }
 \arguments{
 \item{pop}{a population}
 
 \item{sex}{the desired sex (M or F)}
 
-\item{simParam}{simulation parameters object}
+\item{simParam}{simulation parameters. If \code{NULL}, the function uses
+the object named \code{SP} from the global environment.}
 
 \item{...}{captures use of old gender argument}
 }

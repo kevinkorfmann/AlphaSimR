@@ -4,6 +4,7 @@
 \name{MapPop-class}
 \alias{MapPop-class}
 \alias{[,MapPop-method}
+\alias{[,MapPop,ANY,ANY,ANY-method}
 \alias{c,MapPop-method}
 \alias{isMapPop}
 \title{Raw population with genetic map}
@@ -15,14 +16,14 @@
 isMapPop(x)
 }
 \arguments{
-\item{x}{a 'MapPop' object}
+\item{x}{a \code{MapPop} object}
 
 \item{i}{index of individuals}
 
-\item{...}{additional 'MapPop' objects}
+\item{...}{additional \code{MapPop} objects}
 }
 \description{
-Extends \code{\link{RawPop-class}} to add a genetic map.
+Extends \code{\link{RawPop-class}} with a genetic map.
 This is the first object created in a simulation. It is used
 for creating initial populations and setting traits in the
 \code{\link{SimParam}}.
@@ -48,4 +49,3 @@ for creating initial populations and setting traits in the
 
 \item{\code{inbred}}{indicates whether the individuals are fully inbred}
 }}
-

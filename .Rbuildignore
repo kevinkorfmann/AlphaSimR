@@ -1,7 +1,10 @@
-^vignettes/web_only$
 ^.*\.Rproj$
-^\.Rproj\.user$
 ^Notes\.txt$
-^_pkgdown\.yml$
+^\.Rproj\.user$
 ^\.github$
-
+^\.git$
+^_pkgdown\.yml$
+^vignettes/web_only$
+^\.positai$
+^\.claude$
+^local-experiments$

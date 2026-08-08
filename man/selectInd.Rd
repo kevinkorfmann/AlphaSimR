@@ -14,6 +14,7 @@ selectInd(
   returnPop = TRUE,
   candidates = NULL,
   simParam = NULL,
+  nThreads = NULL,
   ...
 )
 }
@@ -50,7 +51,12 @@ individuals is returned.}
 
 \item{candidates}{an optional vector of eligible selection candidates.}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 
 \item{...}{additional arguments if using a function for
 \code{trait} or \code{use}}
@@ -105,3 +111,11 @@ pop6 = selectInd(pop, 5, trait=trtFunc, use=useFunc2, simParam=SP)
 pop6@id
 
 }
+\seealso{
+Other selection functions:
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectFam]{selectFam()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=selectWithinFam]{selectWithinFam()}}
+}
+\concept{selection functions}

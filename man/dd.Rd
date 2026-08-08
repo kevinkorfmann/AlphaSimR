@@ -4,12 +4,17 @@
 \alias{dd}
 \title{Dominance deviations}
 \usage{
-dd(pop, simParam = NULL)
+dd(pop, simParam = NULL, nThreads = NULL)
 }
 \arguments{
 \item{pop}{an object of \code{\link{Pop-class}}}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \description{
 Returns dominance deviations for all traits

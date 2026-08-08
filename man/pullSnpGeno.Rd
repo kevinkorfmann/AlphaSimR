@@ -4,7 +4,14 @@
 \alias{pullSnpGeno}
 \title{Pull SNP genotypes}
 \usage{
-pullSnpGeno(pop, snpChip = 1, chr = NULL, asRaw = FALSE, simParam = NULL)
+pullSnpGeno(
+  pop,
+  snpChip = 1,
+  chr = NULL,
+  asRaw = FALSE,
+  simParam = NULL,
+  nThreads = NULL
+)
 }
 \arguments{
 \item{pop}{an object of \code{\link{Pop-class}}}
@@ -17,7 +24,12 @@ all chromosome are retrieved.}
 
 \item{asRaw}{return in raw (byte) format}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 Returns a matrix of SNP genotypes.

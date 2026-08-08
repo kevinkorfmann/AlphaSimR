@@ -15,6 +15,7 @@ selectCross(
   use = "pheno",
   selectTop = TRUE,
   simParam = NULL,
+  nThreads = NULL,
   ...,
   balance = TRUE
 )
@@ -48,7 +49,12 @@ or randomly "rand"}
 \item{selectTop}{selects highest values if true.
 Selects lowest values if false.}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 
 \item{...}{additional arguments if using a function for
 trait}
@@ -86,3 +92,25 @@ pop = newPop(founderPop, simParam=SP)
 pop2 = selectCross(pop, nInd=4, nCrosses=8, simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+
+Other selection functions:
+\code{\link[=selectFam]{selectFam()}},
+\code{\link[=selectInd]{selectInd()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=selectWithinFam]{selectWithinFam()}}
+}
+\concept{mating functions}
+\concept{selection functions}

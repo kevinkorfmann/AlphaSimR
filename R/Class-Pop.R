@@ -1,22 +1,24 @@
-# RawPop ------------------------------------------------------------------
+# fmt: skip file
+
+# RawPop -----------------------------------------------------------------------
 
 #' @title Raw Population
 #'
 #' @description
 #' The raw population class contains only genotype data.
 #'
-#' @param object a 'RawPop' object
-#' @param x a 'RawPop' object
+#' @param object a \code{RawPop} object
+#' @param x a \code{RawPop} object
 #' @param i index of individuals
-#' @param ... additional 'RawPop' objects
+#' @param ... additional \code{RawPop} objects
 #'
 #' @slot nInd number of individuals
 #' @slot nChr number of chromosomes
 #' @slot ploidy level of ploidy
 #' @slot nLoci number of loci per chromosome
-#' @slot geno list of nChr length containing chromosome genotypes.
+#' @slot geno list of \code{nChr} length containing chromosome genotypes.
 #' Each element is a three dimensional array of raw values.
-#' The array dimensions are nLoci by ploidy by nInd.
+#' The array dimensions are \code{nLoci} by \code{ploidy} by \code{nInd}.
 #'
 #' @export
 setClass("RawPop",
@@ -61,6 +63,7 @@ setValidity("RawPop",function(object){
 })
 
 
+#' @aliases [,RawPop,ANY,ANY,ANY-method
 #' @describeIn RawPop Extract RawPop by index
 setMethod("[",
           signature(x = "RawPop"),
@@ -120,19 +123,19 @@ isRawPop = function(x) {
   return(ret)
 }
 
-# MapPop ------------------------------------------------------------------
+# MapPop -----------------------------------------------------------------------
 
 #' @title Raw population with genetic map
 #'
 #' @description
-#' Extends \code{\link{RawPop-class}} to add a genetic map.
+#' Extends \code{\link{RawPop-class}} with a genetic map.
 #' This is the first object created in a simulation. It is used
 #' for creating initial populations and setting traits in the
 #' \code{\link{SimParam}}.
 #'
-#' @param x a 'MapPop' object
+#' @param x a \code{MapPop} object
 #' @param i index of individuals
-#' @param ... additional 'MapPop' objects
+#' @param ... additional \code{MapPop} objects
 #'
 #' @slot genMap list of chromosome genetic maps
 #' @slot centromere vector of centromere positions
@@ -163,6 +166,7 @@ setValidity("MapPop",function(object){
   }
 })
 
+#' @aliases [,MapPop,ANY,ANY,ANY-method
 #' @describeIn MapPop Extract MapPop by index
 setMethod("[",
           signature(x = "MapPop"),
@@ -214,11 +218,11 @@ isMapPop = function(x) {
 #' @title Raw population with genetic map and id
 #'
 #' @description
-#' Extends \code{\link{MapPop-class}} to add id, mother and father.
+#' Extends \code{\link{MapPop-class}} with id, mother and father.
 #'
-#' @param x a 'NamedMapPop' object
+#' @param x a \code{NamedMapPop} object
 #' @param i index of individuals
-#' @param ... additional 'NamedMapPop' objects
+#' @param ... additional \code{NamedMapPop} objects
 #'
 #' @slot id an individual's identifier
 #' @slot mother the identifier of the individual's mother
@@ -258,6 +262,7 @@ setValidity("NamedMapPop",function(object){
   }
 })
 
+#' @aliases [,NamedMapPop,ANY,ANY,ANY-method
 #' @describeIn NamedMapPop Extract NamedMapPop by index
 setMethod("[",
           signature(x = "NamedMapPop"),
@@ -352,47 +357,50 @@ isNamedMapPop = function(x) {
   return(ret)
 }
 
-# Pop ---------------------------------------------------------------------
+# Pop --------------------------------------------------------------------------
 
 #' @title Population
 #'
 #' @description
-#' Extends \code{\link{RawPop-class}} to add sex, genetic values,
+#' Extends \code{\link{RawPop-class}} with sex, genetic values,
 #' phenotypes, and pedigrees.
 #'
-#' @param object a 'Pop' object
-#' @param x a 'Pop' object
+#' @param object a \code{Pop} object
+#' @param x a \code{Pop} object
 #' @param i index of individuals
-#' @param ... additional 'Pop' objects
+#' @param ... additional \code{Pop} objects
 #'
 #' @slot id an individual's identifier
 #' @slot iid an individual's internal identifier
 #' @slot mother the identifier of the individual's mother
 #' @slot father the identifier of the individual's father
 #' @slot sex sex of individuals: "M" for males, "F" for females,
-#' and "H" for hermaphrodites
+#'   and "H" for hermaphrodites
 #' @slot nTraits number of traits
 #' @slot gv matrix of genetic values. When using GxE traits,
-#' gv reflects gv when p=0.5. Dimensions are nInd by nTraits.
-#' @slot pheno matrix of phenotypic values. Dimensions are
-#' nInd by nTraits.
-#' @slot ebv matrix of estimated breeding values. Dimensions
-#' are nInd rows and a variable number of columns.
+#'   gv reflects gv when p=0.5. Dimensions are nInd by nTraits.
+#' @slot pheno matrix of phenotypic values. Dimensions are nInd by nTraits.
+#' @slot ebv matrix of estimated breeding values. Dimensions are nInd rows and
+#'   a variable number of columns. The variable number of columns enable storing
+#'   estimates for different traits and/or for different kinds of values per
+#'   individual (for example, estimated breeding values and estimated genetic
+#'   values, etc.). Column names should be used to distinguish the estimates of
+#'   traits and values when comparing them to true genetic values in \code{gv} slot.
+#'   See also the \code{misc} slot.
 #' @slot gxe list containing GxE slopes for GxE traits
 #' @slot fixEff a fixed effect relating to the phenotype.
-#' Used by genomic selection models but otherwise ignored.
+#'   Used by genomic selection models but otherwise ignored.
 #' @slot misc a list whose elements correspond to additional miscellaneous
-#' nodes with the items for individuals in the population (see example in
-#' \code{\link{newPop}}) - we support vectors and matrices or objects that
-#' have a generic length and subset method.
-#' This list is normally empty and exists solely as an
-#' open slot available for uses to store extra information about
-#' individuals.
-#' @slot miscPop a list of any length containing optional meta data for the
-#' population (see example in \code{\link{newPop}}).
-#' This list is empty unless information is supplied by the user.
-#' Note that the list is emptied every time the population is subsetted or
-#' combined because the meta data for old population might not be valid anymore.
+#'   nodes with the items for individuals in the population (see example in
+#'   \code{\link{newPop}}) - we support vectors and matrices or objects that
+#'   have a generic length and subset method.
+#'   This list is normally empty and exists solely as an
+#'   open slot available for users to store extra information about individuals.
+#' @slot miscPop a list of additional miscellaneous data for the
+#'   population (see example in \code{\link{newPop}}).
+#'   This list is empty unless information is supplied by the user.
+#'   Note that the list is emptied every time the population is subsetted or
+#'   combined because the meta data for old population might not be valid anymore.
 #'
 #' @seealso \code{\link{newPop}}, \code{\link{newEmptyPop}}, \code{\link{resetPop}}
 #'
@@ -487,6 +495,7 @@ setValidity("Pop",function(object){
   }
 })
 
+#' @aliases [,Pop,ANY,ANY,ANY-method
 #' @describeIn Pop Extract Pop by index or id
 setMethod("[",
           signature(x = "Pop"),
@@ -541,8 +550,13 @@ setMethod("[",
 setMethod("c",
           signature(x = "Pop"),
           function (x, ...){
-            # Uses mergePops for increased speed
-            x = mergePops(c(list(x),list(...)))
+            args = list(...)
+            if (any(sapply(args, isMultiPop))) {
+              # Delegate to MultiPop's c method
+              return(c(newMultiPop(x), ...))
+            }
+            # Use mergePops for increased speed
+            x = mergePops(c(list(x),args))
             return(x)
           }
 )
@@ -577,11 +591,19 @@ setMethod("length",
 #' \code{\link{MapPop-class}} or \code{\link{NamedMapPop-class}}.
 #' The function is intended for use with output from functions such
 #' as \code{\link{runMacs}}, \code{\link{newMapPop}}, or
-#' \code{\link{quickHaplo}}.
+#' \code{\link{quickHaplo}}. It can also be used to create an
+#' empty \code{\link{Pop-class}} object simply by specifying the desired 
+#' \code{ploidy}.
 #'
 #' @param rawPop an object of \code{\link{MapPop-class}} or
 #' \code{\link{NamedMapPop-class}}
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param ploidy optional, integer. Ploidy of the new empty population. 
+#'   Used only if \code{rawPop} is missing.
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #' @param ... additional arguments used internally
 #'
 #' @return Returns an object of \code{\link{Pop-class}}
@@ -593,6 +615,11 @@ setMethod("length",
 #'   To get genetically different sets of individuals you can subset the
 #'   \code{rawPop} input, say first half for one set and the second half
 #'   for the other set.
+#' 
+#'   When \code{rawPop} is missing, and \code{ploidy} is provided, an empty 
+#'   population with the specified \code{ploidy} is returned by calling 
+#'   \code{\link{newEmptyPop}} (useful for programmatic construction or tests).
+#'   If \code{rawPop} is provided, \code{ploidy} is ignored.
 #'
 #' @examples
 #' #Create founder haplotypes
@@ -600,6 +627,7 @@ setMethod("length",
 #'
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #'
 #' #Create population
@@ -613,12 +641,23 @@ setMethod("length",
 #' #MiscPop
 #' pop@miscPop$tmp1 = sum(pop@misc$tmp1)
 #' pop@miscPop$tmp2 = sum(pop@misc$tmp2)
+#' 
+#' #Create empty population with ploidy 2
+#' emptyPop = newPop(ploidy=2L, simParam=SP)
 #' @export
-newPop = function(rawPop,simParam=NULL,...){
+newPop = function(rawPop,ploidy=NULL,simParam=NULL,nThreads=NULL,...){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
   }
-  return(.newPop(rawPop=rawPop,simParam=simParam,...))
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
+  }
+  if(missing(rawPop) && !is.null(ploidy)){
+    return(newEmptyPop(ploidy=ploidy, simParam=simParam))
+  }
+  return(.newPop(rawPop=rawPop,simParam=simParam,nThreads=nThreads,...))
 }
 
 #' @title Create new population
@@ -637,19 +676,28 @@ newPop = function(rawPop,simParam=NULL,...){
 #' @param femaleParentPop optional population of female parents
 #' @param maleParentPop optional population of male parents
 #' @param hist optional recombination history
-#' @param simParam an object of \code{\link{SimParam}}
-#' @param ... additional arguments passed to the finalizePop
-#' function in simParam
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
+#' @param ... additional arguments passed to the \code{finalizePop} or
+#' \code{finalizePheno} function(s) in simParam
 #'
 #' @return Returns an object of \code{\link{Pop-class}}
-#' 
+#'
 #' @keywords internal
 .newPop = function(rawPop, id=NULL, mother=NULL, father=NULL,
                    iMother=NULL, iFather=NULL, isDH=NULL,
                    femaleParentPop=NULL, maleParentPop=NULL,
-                   hist=NULL, simParam=NULL,...){
+                   hist=NULL, simParam=NULL, nThreads=NULL,...){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
 
   stopifnot(sapply(simParam$genMap,length)==rawPop@nLoci)
@@ -720,14 +768,14 @@ newPop = function(rawPop,simParam=NULL,...){
 
   if(simParam$nTraits>=1){
     tmp = getGvIndex(rawPop, simParam$traits, simParam$activeQtl, 
-                     simParam$qtlIndex, simParam$nTraits, simParam$nThreads)
-    
+                     simParam$qtlIndex, simParam$nTraits, nThreads)
+
     gv = tmp[[1]]
     colnames(gv) = simParam$traitNames
-    
+
     gxeTmp = tmp[[2]]
     dim(gxeTmp) = NULL # Account for matrix bug in RcppArmadillo
-    
+
     # Move over gxeTmp for traits with GxE
     for(i in seq_len(simParam$nTraits)){
       if(.hasSlot(simParam$traits[[i]], "gxeEff")){
@@ -756,11 +804,15 @@ newPop = function(rawPop,simParam=NULL,...){
                pheno=pheno,
                ebv=matrix(NA_real_,
                           nrow=rawPop@nInd,
-                          ncol=0))
+                          ncol=0L,
+                          dimnames = list(NULL, NULL))
+               # No dimnames for EBV to make it user-flexible and
+               # avoid rbind() adding them later in merging populations
+               )
   if(simParam$nTraits>=1){
     output = setPheno(output, varE=NULL, reps=1,
                       fixEff=1L, p=NULL, onlyPheno=FALSE,
-                      simParam=simParam)
+                      simParam=simParam, ...)
   }
 
   if(simParam$isTrackPed){
@@ -785,7 +837,11 @@ newPop = function(rawPop,simParam=NULL,...){
 #' resets phenotypes and EBVs.
 #'
 #' @param pop an object of \code{\link{Pop-class}}
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
+#' @param nThreads number of threads to use if OpenMP is available.
+#' If \code{NULL}, the number is obtained from \code{simParam$nThreads}.
 #'
 #' @return an object of \code{\link{Pop-class}}
 #'
@@ -795,6 +851,7 @@ newPop = function(rawPop,simParam=NULL,...){
 #'
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #'
 #' #Create population
@@ -805,9 +862,14 @@ newPop = function(rawPop,simParam=NULL,...){
 #' pop = resetPop(pop, simParam=SP)
 #'
 #' @export
-resetPop = function(pop,simParam=NULL){
+resetPop = function(pop,simParam=NULL,nThreads=NULL){
   if(is.null(simParam)){
     simParam = get("SP",envir=.GlobalEnv)
+  }
+  if(is.null(nThreads)){
+    nThreads = simParam$nThreads
+  }else{
+    nThreads = as.integer(nThreads)
   }
   pop@nTraits = simParam$nTraits
 
@@ -820,7 +882,10 @@ resetPop = function(pop,simParam=NULL){
                      ncol=simParam$nTraits)
   pop@ebv = matrix(NA_real_,
                    nrow=pop@nInd,
-                   ncol=0)
+                   ncol=0L,
+                   dimnames = list(NULL, NULL))
+  # No dimnames for EBV to make it user-flexible and
+  # avoid rbind() adding them later in merging populations
   pop@gxe = vector("list",simParam$nTraits)
   pop@gv = matrix(NA_real_,nrow=pop@nInd,
                   ncol=simParam$nTraits)
@@ -828,7 +893,7 @@ resetPop = function(pop,simParam=NULL){
 
   # Calculate genetic values
   for(i in seq_len(simParam$nTraits)){
-    tmp = getGv(simParam$traits[[i]],pop,simParam$nThreads)
+    tmp = getGv(simParam$traits[[i]],pop,nThreads)
     pop@gv[,i] = tmp[[1]]
     if(length(tmp)>1){
       pop@gxe[[i]] = tmp[[2]]
@@ -854,6 +919,7 @@ resetPop = function(pop,simParam=NULL){
 #'
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #'
 #' #Create population
@@ -874,7 +940,9 @@ isPop = function(x) {
 #' defined ploidy and other parameters taken from simParam.
 #'
 #' @param ploidy the ploidy of the population
-#' @param simParam an object of \code{\link{SimParam}}
+#' @param simParam an object of class \code{\link{SimParam}}. If
+#' \code{NULL}, the function uses the object named \code{SP} from the
+#' global environment.
 #'
 #' @return Returns an object of \code{\link{Pop-class}} with
 #' zero individuals
@@ -885,6 +953,7 @@ isPop = function(x) {
 #'
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #'
 #' #Create empty population
@@ -940,25 +1009,36 @@ newEmptyPop = function(ploidy=2L, simParam=NULL){
                pheno = traitMat,
                ebv = matrix(NA_real_,
                             nrow=0L,
-                            ncol=0L))
+                            ncol=0L,
+                            dimnames = list(NULL, NULL))
+               # No dimnames for EBV to make it user-flexible and
+               # avoid rbind() adding them later in merging populations
+               )
   return(output)
 }
 
-# MultiPop ------------------------------------------------------------------
+# MultiPop ---------------------------------------------------------------------
 
 #' @title Multi-Population
 #'
 #' @description
-#' The mega-population represents a population of populations.
-#' It is designed to behave like a list of populations.
+#' The multi-population holds multiple \code{\link{Pop-class}} and
+#' \code{\link{MultiPop-class}} objects. It is designed to behave like a list
+#' and can hence have a nested structure - see examples in \code{\link{newMultiPop}}.
 #'
-#' @param x a 'MultiPop' object
-#' @param i index of populations or mega-populations
-#' @param ... additional 'MultiPop' or 'Pop' objects
+#' @param object a \code{MultiPop} object
+#' @param x a \code{MultiPop} object
+#' @param i index of \code{MultiPop} or \code{Pop} objects
+#' @param name name used by `$` and `$<-` methods
+#' @param value replacement value for `$<-`, `[[<-` or `names<-`
+#' @param ... additional \code{MultiPop} or \code{Pop} objects
 #'
-#' @slot pops list of \code{\link{Pop-class}} and/or
-#' \code{MultiPop-class}
+#' @slot pops list of \code{\link{Pop-class}} or
+#' \code{MultiPop-class} objects (the latter gives nested structure)
 #'
+#' @seealso \code{\link{newMultiPop}}, \code{\link{newEmptyMultiPop}},
+#'   and \code{\link{mergeMultiPops}} on how to merge one or more \code{MultiPop}
+#'   with control over the level of nesting.
 #'
 #' @export
 setClass("MultiPop",
@@ -981,7 +1061,94 @@ setValidity("MultiPop",function(object){
   }
 })
 
-#' @describeIn MultiPop Extract MultiPop by index
+#' @describeIn MultiPop Show MultiPop object summary
+setMethod("show",
+          signature(object = "MultiPop"),
+          function (object) {
+            # Helper function to print nested structure recursively
+            printMultiPop = function(obj, level, prefix, isLast, idx, nameLabel) {
+              # Determine the branch characters
+              if (isLast) {
+                connector = paste0(prefix, "`-- ")
+                childPrefix = paste0(prefix, "      ")
+              } else {
+                connector = paste0(prefix, "|-- ")
+                childPrefix = paste0(prefix, "|     ")
+              }
+              
+              # Print index
+              indexLabel = paste0("[[", idx, "]] ")
+
+              # Dont print name label if it's empty
+              if (nameLabel %in% c(" \"NA\" - ", " \"\" - ")) {
+                nameLabel = ""
+              }
+              
+              if (isMultiPop(obj)) {
+                # Print MultiPop header
+                cat(connector, indexLabel, nameLabel, "An object of class \"MultiPop\" with ", 
+                    length(obj@pops), " item(s)\n", sep = "")
+                
+                # Print level indicator for the nested MultiPop
+                if (length(obj@pops) > 0) {
+                  levelPrefix = paste0(childPrefix, "|   ")
+                  cat(levelPrefix, "Level ", level + 1, ":\n", sep = "")
+                }
+
+                # Prepare name labels for child items
+                if (!is.null(names(obj))) {
+                  nameLabels = paste0(" \"", names(obj), "\" - ")
+                } else {
+                  nameLabels = rep("", length(object))
+                }
+                
+                # Process each item in the MultiPop
+                for (i in seq_along(obj@pops)) {
+                  isLastItem = (i == length(obj@pops))
+                  printMultiPop(obj@pops[[i]], level = level + 1, idx = i,
+                                prefix = childPrefix, isLast = isLastItem, nameLabel = nameLabels[i])
+                }
+                
+              } else if (isPop(obj)) {
+                # Print Pop object
+                indIds = if (length(obj@id) <= 3) {
+                  paste(obj@id, collapse = ", ")
+                } else {
+                  paste(obj@id[1], obj@id[2], "...", obj@id[length(obj)], 
+                        sep = ", ")
+                }
+                
+                cat(connector, indexLabel, nameLabel, "An object of class \"Pop\" with ", 
+                    obj@nInd, " individual(s): ", indIds, "\n", sep = "")
+              }
+            }
+            
+            # Print top-level header
+            cat("An object of class \"MultiPop\" with ", length(object@pops), 
+                " item(s)\n", sep = "")
+            if (length(object@pops) > 0) {
+              cat("    Level 1:\n")
+            }
+
+            # Prepare name labels for top-level items
+            if (!is.null(names(object))) {
+              nameLabels = paste0(" \"", names(object), "\" - ")
+            } else {
+              nameLabels = rep("", length(object))
+            }
+            
+            # Print each top-level item
+            for (i in seq_along(object@pops)) {
+              isLastItem = (i == length(object@pops))
+              printMultiPop(object@pops[[i]], level = 1, prefix = "", 
+                            isLast = isLastItem, idx = i, nameLabel = nameLabels[i])
+            }
+            invisible()
+          }
+)
+
+#' @aliases [,MultiPop,ANY,ANY,ANY-method
+#' @describeIn MultiPop Subset MultiPop by index
 setMethod("[",
           signature(x = "MultiPop"),
           function(x, i){
@@ -990,7 +1157,7 @@ setMethod("[",
           }
 )
 
-#' @describeIn MultiPop Extract Pop by index
+#' @describeIn MultiPop Extract a population by index
 setMethod("[[",
           signature(x = "MultiPop"),
           function (x, i){
@@ -998,7 +1165,152 @@ setMethod("[[",
           }
 )
 
-#' @describeIn MultiPop Combine multiple MultiPops
+#' @describeIn MultiPop Extract a population by name
+setMethod("$", signature(x = "MultiPop"), function(x, name) {
+  nm = as.character(name)
+  if (length(nm) != 1L) {
+    stop("$ requires a single name")
+  }
+  nms = names(x@pops)
+  if (!is.null(nms) && nm %in% nms) {
+    return(x@pops[[nm]])
+  }
+  return(NULL)
+})
+
+#' @describeIn MultiPop Access names of pops in MultiPop
+setMethod("names", signature(x = "MultiPop"), function(x) {
+  n = names(x@pops)
+  return(n)
+})
+
+#' @aliases [<-,MultiPop,ANY,ANY,ANY-method
+#' @describeIn MultiPop Replace contents of a subset of elements in MultiPop
+setReplaceMethod("[", signature(x = "MultiPop"), function(x, i, value) {
+  # Deletion
+  if (is.null(value)) {
+    x@pops[i] = NULL
+    validObject(x)
+    return(x)
+  }
+
+  # Coerce single Pop/MultiPop to list; require list of Pop/MultiPop otherwise
+  if (isPop(value)) {
+    value = list(value)
+  } else if (isMultiPop(value)) {
+    value = value@pops
+  } else if (is.list(value)) {
+    classes = sapply(value, function(x) isPop(x) || isMultiPop(x) || is.null(x))
+    if (any(!classes)) {
+      stop("All elements of list must be Pop, MultiPop, or NULL")
+    }
+  } else {
+    stop("value must be a list or a Pop/MultiPop")
+  }
+
+  # List semantics handles numeric/character/logical indices, recycling, names, expansion
+  x@pops[i] = value
+  validObject(x)
+  return(x)
+})
+
+#' @describeIn MultiPop Replace contents of a single element in MultiPop
+setReplaceMethod("[[", signature(x = "MultiPop"), function(x, i, value) {
+  if (missing(i)) stop("index required")
+
+  # Require exactly one element
+  if (is.logical(i)) {
+    idx = which(i)
+    if (length(idx) != 1L) {
+      stop("logical index must select exactly one element")
+    }
+  } else if (is.character(i)) {
+    if (length(i) != 1L) {
+      stop("only single character index allowed")
+    }
+    nms = names(x@pops)
+    nm = i
+  } else if (is.numeric(i) || is.integer(i)) {
+    idx = as.integer(i)
+    if (length(idx) != 1L || idx < 1L) stop("invalid numeric index")
+  } else {
+    stop("index must be numeric, character, or logical")
+  }
+
+  # Deletion
+  if (is.null(value)) {
+    if (exists("nms", inherits = FALSE)) {
+      if (!is.null(nms) && nm %in% nms) {
+        x@pops = x@pops[nms != nm]
+      }
+    } else {
+      x@pops[[idx]] = NULL
+    }
+    validObject(x)
+    return(x)
+  }
+
+  # Validate replacement value
+  if (!(isPop(value) || isMultiPop(value))) {
+    stop("value must be a Pop or MultiPop")
+  }
+
+  # Assign / Append
+  if (exists("nm", inherits = FALSE)) {
+    if (!is.null(nms) && nm %in% nms) {
+      x@pops[[nm]] = value
+    } else {
+      x@pops = c(x@pops, setNames(list(value), nm))
+    }
+  } else {
+    x@pops[[idx]] = value
+  }
+
+  validObject(x)
+  return(x)
+})
+
+#' @describeIn MultiPop Replace contents of a single element in MultiPop by name
+setReplaceMethod("$", signature(x = "MultiPop"), function(x, name, value) {
+  nms = names(x@pops)
+  nm = as.character(name)
+  if (length(nm) != 1L) {
+    stop("$ requires a single name")
+  }
+
+  # Deletion
+  if (is.null(value)) {
+    if (!is.null(nms) && nm %in% nms) {
+      x@pops = x@pops[nms != nm]
+    }
+    validObject(x)
+    return(x)
+  }
+
+  # Validate replacement value
+  if (!(isPop(value) || isMultiPop(value))) {
+    stop("value must be a Pop or MultiPop")
+  }
+
+  # Assign / Append
+  if (!is.null(nms) && nm %in% nms) {
+    x@pops[[nm]] = value
+  } else {
+    x@pops = c(x@pops, setNames(list(value), nm))
+  }
+
+  validObject(x)
+  return(x)
+})
+
+#' @describeIn MultiPop Replace names of pops in MultiPop
+setReplaceMethod("names", signature(x = "MultiPop"), function(x, value) {
+  names(x@pops) = value
+  validObject(x)
+  return(x)
+})
+
+#' @describeIn MultiPop Combine multiple MultiPops (without level control)
 setMethod("c",
           signature(x = "MultiPop"),
           function (x, ...){
@@ -1041,17 +1353,25 @@ setMethod("length",
 #'
 #' @examples
 #' #Create founder haplotypes
-#' founderPop = quickHaplo(nInd=2, nChr=1, segSites=10)
+#' founderPop = quickHaplo(nInd=5, nChr=1, segSites=10)
 #'
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
+#' \dontshow{SP$nThreads = 1L}
 #' SP$addTraitA(10)
 #'
-#' #Create population
+#' #Create a population and multi-population
 #' pop = newPop(founderPop, simParam=SP)
-#' megaPop = newMultiPop(pop=pop)
-#' isMultiPop(megaPop)
+#' multiPop = newMultiPop(pop)
+#' isMultiPop(multiPop)
+#' multiPop
 #'
+#' #Create a multi-population with two populations
+#' newMultiPop(pop[1:2], pop[3:4])
+#'
+#' #Create a multi-population with nested structure
+#' newMultiPop(pop[1:2],
+#'             newMultiPop(pop[3:4], pop[5]))
 #' @export
 newMultiPop = function(...){
   input = list(...)
@@ -1066,4 +1386,158 @@ newMultiPop = function(...){
 isMultiPop = function(x) {
   ret = is(x, class2 = "MultiPop")
   return(ret)
+}
+
+#' @title Creates an empty Multi Population
+#'
+#' @description
+#' Creates an empty \code{\link{MultiPop-class}} object.
+#'
+#' @return Returns an object of \code{\link{MultiPop-class}} where the
+#'   \code{multipop@pops} slot is an empty list.
+#'
+#' @examples
+#' # Create an empty multi population
+#' multipop = newEmptyMultiPop()
+#' isMultiPop(multipop)
+#' length(multipop)
+#'
+#' @export
+newEmptyMultiPop = function(){
+  new("MultiPop", pops=list())
+}
+
+#' @title Remove names from a MultiPop
+#'
+#' @description
+#' Remove names from a \code{\link{MultiPop-class}} object at one or
+#' more specified nesting levels.
+#'
+#' @param x A \code{\link{MultiPop-class}} object.
+#' @param level A positive integer, a vector of positive integers, or
+#'   \code{Inf}. If \code{level = Inf}, names are removed at every level.
+#'   If \code{level = c(a, b)}, names are removed only at levels \code{a}
+#'   and \code{b}. Levels must be >= 1; an error is raised if any
+#'   requested level is deeper than the MultiPop's maximum depth.
+#'   The top level is \code{1}.
+#'
+#' @return A \code{\link{MultiPop-class}} object with names removed at the
+#'   requested levels.
+#'
+#' @details
+#' - Top-level elements of a MultiPop have level 1; nested MultiPops increase
+#'   the level by 1 per nesting.  \cr
+#' - Passing a vector of positive integers removes names only at those exact
+#'   levels.  \cr
+#' - Using \code{Inf} removes names at every level.  \cr
+#' - Mixing \code{Inf} with integer levels (e.g. \code{c(1, Inf)}) is not
+#'   allowed and will raise an error.
+#'
+#' @examples
+#' # Create founder haplotypes
+#' founderPop = quickHaplo(nInd = 10, nChr = 1, segSites = 10)
+#'
+#' # Set simulation parameters
+#' SP = SimParam$new(founderPop)
+#'
+#' # Create population
+#' pop = newPop(founderPop, simParam = SP)
+#'
+#' # Create a multi-population with nested structure and names at each level
+#' mp = newMultiPop(
+#'   pop1 = pop[1:3],
+#'   mpA = newMultiPop(
+#'     pop2 = pop[4:6],
+#'     mpB = newMultiPop(pop3 = pop[7:8], pop4 = pop[9:10])
+#'   )
+#' )
+#' print(mp)
+#'
+#' # Remove only top-level names
+#' unnameMultiPop(mp, level = 1)
+#'
+#' # Remove names exactly at levels 2 and 3
+#' unnameMultiPop(mp, level = c(2L, 3L))
+#'
+#' # Remove all names at every level
+#' unnameMultiPop(mp, level = Inf)
+#'
+#' @export
+unnameMultiPop = function(x, level = Inf) {
+  # Get max depth of nesting in MultiPop
+  md = .depthMultiPop(x)
+
+  # Validate level arg
+  if (length(level) == 1L) {
+    if (is.infinite(level)) {
+      levels = Inf
+    } else {
+      if (
+        !is.numeric(level) ||
+          is.na(level) ||
+          level < 1 ||
+          level != as.integer(level)
+      ) {
+        stop("level must be a positive integer or Inf")
+      }
+      if (level > md) {
+        stop(sprintf("requested level exceed max depth of x (%d)", md))
+      }
+      levels = as.integer(level)
+    }
+  } else {
+    if (!is.numeric(level) || any(is.na(level)) || any(level <= 0)) {
+      stop("levels must be a numeric vector of positive integers (no NA)")
+    }
+    if (any(is.infinite(level))) {
+      stop("cannot mix Inf with integer levels")
+    }
+    if (any(level != trunc(level))) {
+      stop("levels must be a numeric vector of positive integers (no NA)")
+    }
+    if (any(level > md)) {
+      stop(sprintf("requested level(s) exceed max depth of x (%d)", md))
+    }
+    levels = as.integer(unique(level))
+  }
+
+  # Recursively unname pops at specified level(s)
+  return(.unname(x, 1L, levels))
+}
+
+#' Helper function to recursively compute the maximum depth of a
+#' MultiPop object, where the top level is considered to be 1.
+#'
+#' @param mp \code{\link{MultiPop-class}} object
+#'
+#' @keywords internal
+.depthMultiPop = function(mp) {
+  multi = which(sapply(mp@pops, isMultiPop))
+  if (length(multi) == 0L) {
+    return(1L)
+  }
+  depth = max(vapply(mp@pops[multi], .depthMultiPop, integer(1L)))
+  return(1L + depth)
+}
+
+#' Helper function to recursively remove names from a MultiPop object at
+#' specified levels, where the top level is considered to be 1.
+#'
+#' @param mp \code{\link{MultiPop-class}} object
+#' @param level Current level in the MultiPop hierarchy
+#' @param levels Set of levels at which to remove names
+#'
+#' @keywords internal
+.unname = function(mp, level, levels) {
+  if (any(is.infinite(levels)) || level %in% levels) {
+    names(mp) = NULL
+  }
+  multi = which(sapply(mp@pops, isMultiPop))
+  if (length(multi) > 0L) {
+    mp@pops[multi] = lapply(mp@pops[multi], function(child) {
+      .unname(child, level + 1L, levels)
+    })
+  }
+  validObject(mp)
+  return(mp)
 }

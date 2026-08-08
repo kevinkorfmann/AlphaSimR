@@ -333,10 +333,6 @@ mergeMultIntMat <- function(X, nRow, nCol) {
     .Call(`_AlphaSimR_mergeMultIntMat`, X, nRow, nCol)
 }
 
-sampleInt <- function(n, N) {
-    .Call(`_AlphaSimR_sampleInt`, n, N)
-}
-
 sampAllComb <- function(nLevel1, nLevel2, n) {
     .Call(`_AlphaSimR_sampAllComb`, nLevel1, nLevel2, n)
 }
@@ -349,6 +345,24 @@ calcCoef <- function(X, Y) {
     .Call(`_AlphaSimR_calcCoef`, X, Y)
 }
 
+#' @title Check if OpenMP is available
+#'
+#' @description Checks if OpenMP is available
+#'
+#' @return logical
+#'
+#' @seealso \code{vignette("parallelization", package="AlphaSimR")}
+#'  for setup details and \code{\link{getNumThreads}}.
+#'
+#' @examples
+#' isOpenMPAvailable()
+#' getNumThreads()
+#'
+#' @export
+isOpenMPAvailable <- function() {
+    .Call(`_AlphaSimR_isOpenMPAvailable`)
+}
+
 #' @title Number of available threads
 #'
 #' @description
@@ -357,7 +371,11 @@ calcCoef <- function(X, Y) {
 #'
 #' @return integer
 #'
+#' @seealso \code{vignette("parallelization", package="AlphaSimR")}
+#'  for setup details and \code{\link{isOpenMPAvailable}}.
+#'
 #' @examples
+#' isOpenMPAvailable()
 #' getNumThreads()
 #'
 #' @export
@@ -369,7 +387,23 @@ packHaplo <- function(haplo, ploidy, inbred) {
     .Call(`_AlphaSimR_packHaplo`, haplo, ploidy, inbred)
 }
 
+rngDiagnosticsSampleInt <- function(n, N, reps, seed) {
+    .Call(`_AlphaSimR_rngDiagnosticsSampleInt`, n, N, reps, seed)
+}
+
+rngDiagnosticsSamplePoisson <- function(lambda, reps, seed) {
+    .Call(`_AlphaSimR_rngDiagnosticsSamplePoisson`, lambda, reps, seed)
+}
+
 MaCS <- function(args, maxSites, inbred, ploidy, nThreads, seed) {
     .Call(`_AlphaSimR_MaCS`, args, maxSites, inbred, ploidy, nThreads, seed)
+}
+
+resolveVariantEncodingCpp <- function(originRows, currentHaplotypes, originHaplotypes, knownOrigins) {
+    .Call(`_AlphaSimR_resolveVariantEncodingCpp`, originRows, currentHaplotypes, originHaplotypes, knownOrigins)
+}
+
+buildTreeSequenceCpp <- function(recHist, pedigree, sampleIid, individualId, chromosome, nLoci, founderIid, originHaplotypes, sampleAlleleOverrides, includeVariants, simplify, version, timestamp) {
+    .Call(`_AlphaSimR_buildTreeSequenceCpp`, recHist, pedigree, sampleIid, individualId, chromosome, nLoci, founderIid, originHaplotypes, sampleAlleleOverrides, includeVariants, simplify, version, timestamp)
 }
 

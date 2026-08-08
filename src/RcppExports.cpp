@@ -772,18 +772,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sampleInt
-arma::uvec sampleInt(arma::uword n, arma::uword N);
-RcppExport SEXP _AlphaSimR_sampleInt(SEXP nSEXP, SEXP NSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::uword >::type n(nSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type N(NSEXP);
-    rcpp_result_gen = Rcpp::wrap(sampleInt(n, N));
-    return rcpp_result_gen;
-END_RCPP
-}
 // sampAllComb
 arma::umat sampAllComb(arma::uword nLevel1, arma::uword nLevel2, arma::uword n);
 RcppExport SEXP _AlphaSimR_sampAllComb(SEXP nLevel1SEXP, SEXP nLevel2SEXP, SEXP nSEXP) {
@@ -821,6 +809,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// isOpenMPAvailable
+bool isOpenMPAvailable();
+RcppExport SEXP _AlphaSimR_isOpenMPAvailable() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(isOpenMPAvailable());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getNumThreads
 int getNumThreads();
 RcppExport SEXP _AlphaSimR_getNumThreads() {
@@ -844,8 +842,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rngDiagnosticsSampleInt
+arma::imat rngDiagnosticsSampleInt(arma::uword n, arma::uword N, arma::uword reps, uint64_t seed);
+RcppExport SEXP _AlphaSimR_rngDiagnosticsSampleInt(SEXP nSEXP, SEXP NSEXP, SEXP repsSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::uword >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type N(NSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type reps(repsSEXP);
+    Rcpp::traits::input_parameter< uint64_t >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rngDiagnosticsSampleInt(n, N, reps, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rngDiagnosticsSamplePoisson
+arma::ivec rngDiagnosticsSamplePoisson(double lambda, arma::uword reps, uint64_t seed);
+RcppExport SEXP _AlphaSimR_rngDiagnosticsSamplePoisson(SEXP lambdaSEXP, SEXP repsSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type reps(repsSEXP);
+    Rcpp::traits::input_parameter< uint64_t >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rngDiagnosticsSamplePoisson(lambda, reps, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
 // MaCS
-Rcpp::List MaCS(Rcpp::String args, arma::uvec maxSites, bool inbred, arma::uword ploidy, int nThreads, Rcpp::StringVector seed);
+Rcpp::List MaCS(Rcpp::String args, arma::uvec maxSites, bool inbred, arma::uword ploidy, int nThreads, arma::uvec seed);
 RcppExport SEXP _AlphaSimR_MaCS(SEXP argsSEXP, SEXP maxSitesSEXP, SEXP inbredSEXP, SEXP ploidySEXP, SEXP nThreadsSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -855,8 +880,45 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type inbred(inbredSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type ploidy(ploidySEXP);
     Rcpp::traits::input_parameter< int >::type nThreads(nThreadsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type seed(seedSEXP);
     rcpp_result_gen = Rcpp::wrap(MaCS(args, maxSites, inbred, ploidy, nThreads, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// resolveVariantEncodingCpp
+Rcpp::List resolveVariantEncodingCpp(Rcpp::IntegerMatrix originRows, Rcpp::IntegerMatrix currentHaplotypes, Rcpp::IntegerMatrix originHaplotypes, Rcpp::LogicalVector knownOrigins);
+RcppExport SEXP _AlphaSimR_resolveVariantEncodingCpp(SEXP originRowsSEXP, SEXP currentHaplotypesSEXP, SEXP originHaplotypesSEXP, SEXP knownOriginsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type originRows(originRowsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type currentHaplotypes(currentHaplotypesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type originHaplotypes(originHaplotypesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type knownOrigins(knownOriginsSEXP);
+    rcpp_result_gen = Rcpp::wrap(resolveVariantEncodingCpp(originRows, currentHaplotypes, originHaplotypes, knownOrigins));
+    return rcpp_result_gen;
+END_RCPP
+}
+// buildTreeSequenceCpp
+SEXP buildTreeSequenceCpp(Rcpp::List recHist, Rcpp::IntegerMatrix pedigree, Rcpp::IntegerVector sampleIid, Rcpp::CharacterVector individualId, int chromosome, int nLoci, Rcpp::IntegerVector founderIid, Rcpp::IntegerMatrix originHaplotypes, Rcpp::IntegerMatrix sampleAlleleOverrides, bool includeVariants, bool simplify, std::string version, std::string timestamp);
+RcppExport SEXP _AlphaSimR_buildTreeSequenceCpp(SEXP recHistSEXP, SEXP pedigreeSEXP, SEXP sampleIidSEXP, SEXP individualIdSEXP, SEXP chromosomeSEXP, SEXP nLociSEXP, SEXP founderIidSEXP, SEXP originHaplotypesSEXP, SEXP sampleAlleleOverridesSEXP, SEXP includeVariantsSEXP, SEXP simplifySEXP, SEXP versionSEXP, SEXP timestampSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type recHist(recHistSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type pedigree(pedigreeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sampleIid(sampleIidSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type individualId(individualIdSEXP);
+    Rcpp::traits::input_parameter< int >::type chromosome(chromosomeSEXP);
+    Rcpp::traits::input_parameter< int >::type nLoci(nLociSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type founderIid(founderIidSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type originHaplotypes(originHaplotypesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type sampleAlleleOverrides(sampleAlleleOverridesSEXP);
+    Rcpp::traits::input_parameter< bool >::type includeVariants(includeVariantsSEXP);
+    Rcpp::traits::input_parameter< bool >::type simplify(simplifySEXP);
+    Rcpp::traits::input_parameter< std::string >::type version(versionSEXP);
+    Rcpp::traits::input_parameter< std::string >::type timestamp(timestampSEXP);
+    rcpp_result_gen = Rcpp::wrap(buildTreeSequenceCpp(recHist, pedigree, sampleIid, individualId, chromosome, nLoci, founderIid, originHaplotypes, sampleAlleleOverrides, includeVariants, simplify, version, timestamp));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -910,13 +972,17 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AlphaSimR_mergeGeno", (DL_FUNC) &_AlphaSimR_mergeGeno, 2},
     {"_AlphaSimR_mergeMultGeno", (DL_FUNC) &_AlphaSimR_mergeMultGeno, 4},
     {"_AlphaSimR_mergeMultIntMat", (DL_FUNC) &_AlphaSimR_mergeMultIntMat, 3},
-    {"_AlphaSimR_sampleInt", (DL_FUNC) &_AlphaSimR_sampleInt, 2},
     {"_AlphaSimR_sampAllComb", (DL_FUNC) &_AlphaSimR_sampAllComb, 3},
     {"_AlphaSimR_sampHalfDialComb", (DL_FUNC) &_AlphaSimR_sampHalfDialComb, 2},
     {"_AlphaSimR_calcCoef", (DL_FUNC) &_AlphaSimR_calcCoef, 2},
+    {"_AlphaSimR_isOpenMPAvailable", (DL_FUNC) &_AlphaSimR_isOpenMPAvailable, 0},
     {"_AlphaSimR_getNumThreads", (DL_FUNC) &_AlphaSimR_getNumThreads, 0},
     {"_AlphaSimR_packHaplo", (DL_FUNC) &_AlphaSimR_packHaplo, 3},
+    {"_AlphaSimR_rngDiagnosticsSampleInt", (DL_FUNC) &_AlphaSimR_rngDiagnosticsSampleInt, 4},
+    {"_AlphaSimR_rngDiagnosticsSamplePoisson", (DL_FUNC) &_AlphaSimR_rngDiagnosticsSamplePoisson, 3},
     {"_AlphaSimR_MaCS", (DL_FUNC) &_AlphaSimR_MaCS, 6},
+    {"_AlphaSimR_resolveVariantEncodingCpp", (DL_FUNC) &_AlphaSimR_resolveVariantEncodingCpp, 4},
+    {"_AlphaSimR_buildTreeSequenceCpp", (DL_FUNC) &_AlphaSimR_buildTreeSequenceCpp, 13},
     {NULL, NULL, 0}
 };
 

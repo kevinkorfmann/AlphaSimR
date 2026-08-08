@@ -4,7 +4,14 @@
 \alias{makeCross2}
 \title{Make designed crosses}
 \usage{
-makeCross2(females, males, crossPlan, nProgeny = 1, simParam = NULL)
+makeCross2(
+  females,
+  males,
+  crossPlan,
+  nProgeny = 1,
+  simParam = NULL,
+  nThreads = NULL
+)
 }
 \arguments{
 \item{females}{an object of \code{\link{Pop-class}} for female parents.}
@@ -15,9 +22,15 @@ makeCross2(females, males, crossPlan, nProgeny = 1, simParam = NULL)
 female and male parents. Either integers for the position in
 population or character strings for the IDs.}
 
-\item{nProgeny}{number of progeny per cross}
+\item{nProgeny}{number of progeny per cross. May be a single value for all 
+crosses or a vector with values for each cross.}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 Returns an object of \code{\link{Pop-class}}
@@ -37,8 +50,29 @@ SP = SimParam$new(founderPop)
 #Create population
 pop = newPop(founderPop, simParam=SP)
 
-#Cross individual 1 with individual 10
-crossPlan = matrix(c(1,10), nrow=1, ncol=2)
+#Cross individual 1 with individual 10 and 2 with 4
+crossPlan = matrix(c(1,10,
+                     2,4),
+                   nrow=2, ncol=2, byrow=TRUE)
 pop2 = makeCross2(pop, pop, crossPlan, simParam=SP)
+getPed(pop2)
 
+#The same but variable nProgeny
+pop3 = makeCross2(pop, pop, crossPlan, nProgeny=c(1,2),simParam=SP)
+getPed(pop3)
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+}
+\concept{mating functions}

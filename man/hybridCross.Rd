@@ -9,7 +9,8 @@ hybridCross(
   males,
   crossPlan = "testcross",
   returnHybridPop = FALSE,
-  simParam = NULL
+  simParam = NULL,
+  nThreads = NULL
 )
 }
 \arguments{
@@ -24,7 +25,12 @@ or a matrix with two columns for designed crosses}
 \code{\link{HybridPop-class}}. If false returns results as
 \code{\link{Pop-class}}. Population must be fully inbred if TRUE.}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \description{
 A convenient function for hybrid plant breeding simulations. Allows for
@@ -49,3 +55,18 @@ pop = newPop(founderPop, simParam=SP)
 pop2 = hybridCross(pop, pop, simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+}
+\concept{mating functions}

@@ -4,19 +4,32 @@
 \alias{self}
 \title{Self individuals}
 \usage{
-self(pop, nProgeny = 1, parents = NULL, keepParents = TRUE, simParam = NULL)
+self(
+  pop,
+  nProgeny = 1,
+  parents = NULL,
+  keepParents = TRUE,
+  simParam = NULL,
+  nThreads = NULL
+)
 }
 \arguments{
 \item{pop}{an object of \code{\link{Pop-class}}}
 
-\item{nProgeny}{total number of selfed progeny per individual}
+\item{nProgeny}{number of selfed progeny per individual. May be a single value 
+for all or a vector providing values for each individual.}
 
 \item{parents}{an optional vector of indices for allowable parents}
 
 \item{keepParents}{should previous parents be used for mother and
 father.}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 Returns an object of \code{\link{Pop-class}}
@@ -40,3 +53,18 @@ pop = newPop(founderPop, simParam=SP)
 pop2 = self(pop, simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+}
+\concept{mating functions}

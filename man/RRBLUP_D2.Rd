@@ -17,6 +17,7 @@ RRBLUP_D2(
   useEM = TRUE,
   tol = 1e-06,
   simParam = NULL,
+  nThreads = NULL,
   ...
 )
 }
@@ -53,7 +54,12 @@ the initial values are considered true.}
 
 \item{tol}{tolerance for EM algorithm convergence}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 
 \item{...}{additional arguments if using a function for
 traits}

@@ -17,7 +17,9 @@ setPhenoProgTest(
   fixEff = 1L,
   p = NULL,
   onlyPheno = FALSE,
-  simParam = NULL
+  simParam = NULL,
+  nThreads = NULL,
+  ...
 )
 }
 \arguments{
@@ -54,7 +56,15 @@ sampled at random.}
 
 \item{onlyPheno}{should only the phenotype be returned, see return}
 
-\item{simParam}{an object of \code{\link{SimParam}}}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
+
+\item{...}{additional arguments passed to the \code{finalizePheno}
+function in simParam}
 }
 \value{
 Returns an object of \code{\link{Pop-class}} or
@@ -90,3 +100,18 @@ pop2 = newPop(founderPop[6:10], simParam=SP)
 pop3 = setPhenoProgTest(pop1, pop2, use="gv", simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=makeDH]{makeDH()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}}
+}
+\concept{mating functions}

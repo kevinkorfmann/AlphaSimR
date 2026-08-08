@@ -4,7 +4,7 @@
 \alias{calcPheno}
 \title{Calculate phenotypes}
 \usage{
-calcPheno(pop, varE, reps, p, traits, simParam)
+calcPheno(pop, varE, reps, p, traits, simParam = NULL)
 }
 \arguments{
 \item{pop}{an object of class Pop}
@@ -17,7 +17,8 @@ calcPheno(pop, varE, reps, p, traits, simParam)
 
 \item{traits}{number of traits}
 
-\item{simParam}{simulation parameters object}
+\item{simParam}{simulation parameters. If \code{NULL}, the function uses
+the object named \code{SP} from the global environment.}
 }
 \description{
 Calculate phenotypes

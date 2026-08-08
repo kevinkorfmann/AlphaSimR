@@ -4,12 +4,13 @@
 \alias{convertTraitsToNames}
 \title{Convert traits to a vector of names}
 \usage{
-convertTraitsToNames(traits, simParam)
+convertTraitsToNames(traits, simParam = NULL)
 }
 \arguments{
 \item{traits}{the traits argument from a GS model}
 
-\item{simParam}{the simulation parameters object}
+\item{simParam}{simulation parameters. If \code{NULL}, the function uses
+the object named \code{SP} from the global environment.}
 }
 \value{
 a vector of names for traits

@@ -4,7 +4,14 @@
 \alias{makeDH}
 \title{Generates DH lines}
 \usage{
-makeDH(pop, nDH = 1, useFemale = TRUE, keepParents = TRUE, simParam = NULL)
+makeDH(
+  pop,
+  nDH = 1,
+  useFemale = TRUE,
+  keepParents = TRUE,
+  simParam = NULL,
+  nThreads = NULL
+)
 }
 \arguments{
 \item{pop}{an object of 'Pop' superclass}
@@ -16,7 +23,12 @@ makeDH(pop, nDH = 1, useFemale = TRUE, keepParents = TRUE, simParam = NULL)
 \item{keepParents}{should previous parents be used for mother and
 father.}
 
-\item{simParam}{an object of 'SimParam' class}
+\item{simParam}{an object of class \code{\link{SimParam}}. If
+\code{NULL}, the function uses the object named \code{SP} from the
+global environment.}
+
+\item{nThreads}{number of threads to use if OpenMP is available.
+If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 Returns an object of \code{\link{Pop-class}}
@@ -41,3 +53,18 @@ pop = newPop(founderPop, simParam=SP)
 pop2 = makeDH(pop, simParam=SP)
 
 }
+\seealso{
+Other mating functions:
+\code{\link[=hybridCross]{hybridCross()}},
+\code{\link[=makeCross]{makeCross()}},
+\code{\link[=makeCross2]{makeCross2()}},
+\code{\link[=pedigreeCross]{pedigreeCross()}},
+\code{\link[=randCross]{randCross()}},
+\code{\link[=randCross2]{randCross2()}},
+\code{\link[=selectCross]{selectCross()}},
+\code{\link[=selectOP]{selectOP()}},
+\code{\link[=self]{self()}},
+\code{\link[=setPhenoGCA]{setPhenoGCA()}},
+\code{\link[=setPhenoProgTest]{setPhenoProgTest()}}
+}
+\concept{mating functions}
